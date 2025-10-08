@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DRF Login</title>
+</head>
+<body>
+  <h2>Login</h2>
+
+  <form id="loginForm">
+    <label>Username:</label>
+    <input type="text" id="username" required><br><br>
+
+    <label>Password:</label>
+    <input type="password" id="password" required><br><br>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <h3>Result:</h3>
+  <pre id="result"></pre>
+
+  <script>
+      document.getElementById("loginForm").addEventListener("submit", function(e) {
+      e.preventDefault(); // stop form from reloading page
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      fetch("http://127.0.0.1:8000/api/auth/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error("Login failed");
+        }
+      })
+      .then(data => {
+        console.log("Tokens:", data);
+
+        // Save tokens in localStorage (or sessionStorage)
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+
+        //  Redirect to main page
+        window.location.href = "/bid.html";
+      })
+      .catch(error => {
+        alert(error.message);
+      });
+    });     
+  </script>
+</body>
+</html>
